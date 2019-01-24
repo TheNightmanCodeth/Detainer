@@ -19,7 +19,24 @@ using Granite.Widgets;
 
 namespace Application {
 public class MainWindow : Gtk.Window {
-    private StackManager stackManager = StackManager.get_instance();
-    private HeaderBar headerBar = HeaderBar.get_instance();
+    private StackManager stack_manager = StackManager.get_instance ();
+    private HeaderBar header_bar = HeaderBar.get_instance ();
+    private uint configure_id;
+
+    public MainWindow (Gtk.Application application) {
+        Object (application: application,
+                icon_name: Constants.APPLICATION_NAME,
+                height_request: Constants.APPLICATION_HEIGHT,
+                width_request: Constants.APPLICATION_WIDTH);
+    }
+
+    construct {
+        var style_context = get_style_context ();
+        style_context.add_class (Gtk.STYLE_CLASS_VIEW);
+        style_context.add_class ("rounded");
+
+        set_titlebar (header_bar);
+        stack_manager.load_views (this);        
+    }
 }
 }

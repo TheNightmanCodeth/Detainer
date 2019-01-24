@@ -22,12 +22,14 @@ public class Authenticate : Object {
         MOUNT
     }
 
-    private GocryptHandler gocrypt_handler = new GocryptHandler ();
+    private DetainerHandler detainer_handler = new DetainerHandler ();
 
     public Authenticate (string title, string description, AuthType type) {
-        private Gtk.Entry pass_entry, confirmation_entry, title_entry;
-        private Granite.MessageDialog message_dialog;
-        private string confirm_button = "Authenticate";
+        Gtk.Entry pass_entry = new Gtk.Entry ();
+        Gtk.Entry confirmation_entry = new Gtk.Entry ();
+        Gtk.Entry title_entry = new Gtk.Entry ();
+        Granite.MessageDialog message_dialog;
+        string confirm_button = "Authenticate";
 
         message_dialog = new Granite.MessageDialog.with_image_from_icon_name (
             title,
@@ -36,22 +38,19 @@ public class Authenticate : Object {
             Gtk.ButtonsType.NONE
         );
 
-        pass_entry = new Gtk.Entry ();
         pass_entry.visibility = false;
-        pass_entry.set_icon_from_icon_name (EntryIconPosition.PRIMARY, "dialog-password-symbolic");
+        pass_entry.set_icon_from_icon_name (Gtk.EntryIconPosition.PRIMARY, "dialog-password-symbolic");
         pass_entry.placeholder_text = "Password...";
         pass_entry.show ();
 
         if (type == AuthType.CREATE) {
-            title_entry = new Gtk.Entry ();
             title_entry.visibility = true;
-            title_entry.set_icon_from_icon_name (EntryIconPosition.PRIMARY, "emblem-default-symbolic");
+            title_entry.set_icon_from_icon_name (Gtk.EntryIconPosition.PRIMARY, "emblem-default-symbolic");
             title_entry.placeholder_text = "Name";
             title_entry.show ();
 
-            confirmation_entry = new Gtk.Entry ();
             confirmation_entry.visibility = false;
-            confirmation_entry.set_icon_from_icon_name (EntryIconPosition.PRIMARY, "dialog-password-symbolic");
+            confirmation_entry.set_icon_from_icon_name (Gtk.EntryIconPosition.PRIMARY, "dialog-password-symbolic");
             confirmation_entry.placeholder_text = "Confirm password";
             confirmation_entry.show ();
 
@@ -66,22 +65,23 @@ public class Authenticate : Object {
         create.get_style_context ().add_class ("suggested-action");
         create.clicked.connect (() => {
             switch (type) {
-                case AuthType.CREATE {
+                case AuthType.CREATE: {
                     var confirm = confirmation_entry.get_text ();
                     if (confirm == password) {
-                        gocrypt_handler.create_detainer (password, title_entry.get_text ());
+                        detainer_handler.create_detainer (password, title_entry.get_text ());
                     }
                 }
+                break;
             }
         });
 
         cancel.clicked.connect (() => {
             message_dialog.destroy ();
-        })
+        });
 
-        if (create == AuthType.CREATE) message_dialog.custom_bin.add (title_entry);
+        if (type == AuthType.CREATE) message_dialog.custom_bin.add (title_entry);
         message_dialog.custom_bin.add (pass_entry);
-        if (create == AuthType.CREATE) message_dialog.custom_bin.add (confirmation_entry);
+        if (type == AuthType.CREATE) message_dialog.custom_bin.add (confirmation_entry);
 
         message_dialog.run ();
     }

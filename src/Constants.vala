@@ -18,7 +18,9 @@
 namespace Application.Constants {
     public const string APPLICATION_NAME = "me.jdiggity.detainer";
     public const string VERSION_NUMBER = "v0.0.1";
-    public const string VERSION_NAME = "First"
+    public const string VERSION_NAME = "First";
+    public const int APPLICATION_HEIGHT = 700;
+    public const int APPLICATION_WIDTH = 890;
 
-    public const Gdk.RGBA BRAND_COLOR = {87, 101, 211, 1}
+    public const Gdk.RGBA BRAND_COLOR = {87, 101, 211, 1};
 }

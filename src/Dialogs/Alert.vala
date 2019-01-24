@@ -20,7 +20,7 @@ public class Alert : Object {
     private StackManager stack_manager = StackManager.get_instance ();
 
     public Alert (string title, string description) {
-        var message_dialog = new Gtk.MessageDialog.with_image_from_icon_name (title, description "dialog-warning");
+        var message_dialog = new Granite.MessageDialog.with_image_from_icon_name (title, description, "dialog-warning");
         message_dialog.transient_for = stack_manager.main_window;
         message_dialog.window_position = Gtk.WindowPosition.CENTER;
         message_dialog.show_all ();

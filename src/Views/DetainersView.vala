@@ -15,3 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+using Granite.Widgets;
+
+namespace Application {
+public class DetainersView : Gtk.ScrolledWindow {
+    private StackManager stack_manager = StackManager.get_instance ();
+    private DetainerHandler detainer_handler = new DetainerHandler ();
+
+    public DetainersView () {
+        
+    }
+}
+}

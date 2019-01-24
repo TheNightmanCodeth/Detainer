@@ -32,25 +32,24 @@ public class App:Granite.Application {
     }
 
     public void new_window () {
+        var stack_manager = StackManager.get_instance ();
         if (window != null) {
-            var stackManager = StackManager.get_instance();
-            if (stackManager.getStack().get_visisble_child_name() == "progress-view") {
+            if (stack_manager.get_stack ().get_visible_child_name () == "detainers-view") {
                 window.present ();
                 return;
             }
 
-            window.recheck ();
             window.present ();
             return;
         }
 
         //Add custom stylesheet
-        weak Gtk.IconTheme default_theme = Gtk.IconTheme.get_default ();
-        default_theme.add_resource_path ("/me/jdiggity/detainer");
+        //weak Gtk.IconTheme default_theme = Gtk.IconTheme.get_default ();
+        //default_theme.add_resource_path ("/me/jdiggity/detainer");
 
-        var provider = new Gtk.CssProvider ();
-        provider.load_from_resource ("/me/jdiggity/detainer/application.css");
-        Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+        //var provider = new Gtk.CssProvider ();
+        //provider.load_from_resource ("/me/jdiggity/detainer/application.css");
+        //Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
         window = new MainWindow (this);
         window.show_all ();

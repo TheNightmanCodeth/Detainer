@@ -20,7 +20,7 @@ public class StackManager : Object {
     static StackManager? instance;
 
     private Gtk.Stack stack;
-    private Gtk.Window mainWindow;
+    public Gtk.Window main_window;
 
     private static string DETAILS_VIEW_ID = "details-view";
     private static string DETAINERS_VIEW_ID = "detainers-view";
@@ -39,12 +39,12 @@ public class StackManager : Object {
         return instance;
     }
 
-    public static Gtk.Stack getStack () {
+    public Gtk.Stack get_stack () {
         return this.stack;
     }
 
-    public void loadViews (Gtk.Window window) {
-        this.mainWindow = window;
+    public void load_views (Gtk.Window window) {
+        main_window = window;
 
         // Add all view to the stack via add_named
         stack.add_named(new DetailsView (), DETAILS_VIEW_ID);
@@ -54,7 +54,9 @@ public class StackManager : Object {
         // Listen for visible screen change
         stack.notify["visible-child"].connect (() => {
             // TODO: Use stack.get_visible_child_name() to change the HeaderBar on child change
-        })
+        });
+
+        window.add(stack);
     }
 }
 }
