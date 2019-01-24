@@ -1,7 +1,0 @@
-using Granite.Widgets;
-
-namespace Application {
-public class MainWindow : Gtk.Window {
-    
-}
-}
