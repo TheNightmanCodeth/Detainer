@@ -13,6 +13,7 @@ executable(
     'src/Views/DetailsView.vala',
     'src/Views/DetainersView.vala',
     'src/Views/SettingsView.vala',
+    'src/Views/WelcomeView.vala',
     'src/Application.vala',
     'src/Constants.vala',
     'src/DetainerHandler.vala',
