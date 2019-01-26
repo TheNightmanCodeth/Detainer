@@ -19,7 +19,7 @@ namespace Application {
 public class DetainerHandler : Object {
     private string result;
     private string error;
-    private string crypt_dir = Environment.get_home_dir () + "/.detainer/crypt";
+    private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
     private int status;
 
     /*-
@@ -38,12 +38,12 @@ public class DetainerHandler : Object {
      */
     public bool create_detainer (string password, string name, owned string? path = null) {
         if (path == null || path == "") {
-            path = Environment.get_home_dir () + "/Detainers/" + name;
+            path = Environment.get_home_dir () + "/Detainer/" + name;
         }
 
         try {
             /* Make the crypt directory */
-            if (!File.new_for_path (path).make_directory_with_parents ()) {
+            if (!File.new_for_path (crypt_dir + name).make_directory_with_parents ()) {
                 new Alert ("An Error Occured", error);
                 return false;
             }
@@ -67,19 +67,50 @@ public class DetainerHandler : Object {
             return false;
         }
 
-        /* Make the gocryptfs folder */
+        /* Make the gocryptfs detainer */
         try {
-            Process.spawn_command_line_sync ("echo \"" + password + "\" | " +
-                                        "gocryptfs -init -q -- " + crypt_dir + "/" + name,
-                                        out result, out error, out status);
-            if (error != null && error != "") {
-                new Alert ("An error occured", error);
-                error = null;
-            }
+            string[] spawn_args = {"gocryptfs", "-init", "-q", "--", crypt_dir + name};
+            string[] spawn_env = Environ.get ();
+            Pid child_pid;
+
+            int stdin;
+            int stdout;
+            int stderr;
+
+            Process.spawn_async_with_pipes ("/",
+                spawn_args,
+                spawn_env,
+                SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
+                null,
+                out child_pid,
+                out stdin,
+                out stdout,
+                out stderr);
+            
+            FileStream input = FileStream.fdopen (stdin, "w");
+            input.write (password.data);
+            
+            ChildWatch.add (child_pid, (pid, status) => {
+                Process.close_pid (pid);
+            });
         } catch (SpawnError e) {
             new Alert ("An error occured", e.message);
         }
+
+        /* Add this detainer to the list in ~/Detainers/detainers.txt */
+        var store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
+        try {
+            FileOutputStream os = store.append_to (FileCreateFlags.NONE);
+            os.write ((name + ":" + path + "\n").data);
+        } catch (Error e) {
+            new Alert ("An error occured", error);
+        }
+        
         return true;
+    }
+
+    public List<string> get_detainer_info() {
+        return null;
     }
 }
 }
