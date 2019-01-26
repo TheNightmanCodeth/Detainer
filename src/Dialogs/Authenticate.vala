@@ -60,18 +60,13 @@ public class Authenticate : Object {
         var cancel = (Gtk.Button) message_dialog.add_button ("Cancel", 6666);
         var create = (Gtk.Button) message_dialog.add_button (confirm_button, 9090);
 
-        var password = pass_entry.get_text ();
-
         create.get_style_context ().add_class ("suggested-action");
         create.clicked.connect (() => {
-            switch (type) {
-                case AuthType.CREATE: {
-                    var confirm = confirmation_entry.get_text ();
-                    if (confirm == password) {
-                        detainer_handler.create_detainer (password, title_entry.get_text ());
-                    }
-                }
-                break;
+            var confirm = confirmation_entry.get_text ();
+            var password = pass_entry.get_text ();
+            if (confirm == password) {
+                detainer_handler.create_detainer (password, title_entry.get_text ());
+                message_dialog.destroy ();
             }
         });
 
