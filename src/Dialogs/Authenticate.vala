@@ -40,7 +40,7 @@ public class Authenticate : Object {
 
         pass_entry.visibility = false;
         pass_entry.set_icon_from_icon_name (Gtk.EntryIconPosition.PRIMARY, "dialog-password-symbolic");
-        pass_entry.placeholder_text = "Password...";
+        pass_entry.placeholder_text = "Password";
         pass_entry.show ();
 
         if (type == AuthType.CREATE) {
@@ -79,9 +79,12 @@ public class Authenticate : Object {
             message_dialog.destroy ();
         });
 
-        if (type == AuthType.CREATE) message_dialog.custom_bin.add (title_entry);
-        message_dialog.custom_bin.add (pass_entry);
-        if (type == AuthType.CREATE) message_dialog.custom_bin.add (confirmation_entry);
+        var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 6);
+        if (type == AuthType.CREATE) box.pack_start (title_entry, false, false, 0);
+        box.pack_start (pass_entry, false, false, 0);
+        if (type == AuthType.CREATE) box.pack_start (confirmation_entry, false, false, 0);
+        box.show ();
+        message_dialog.custom_bin.add (box);
 
         message_dialog.run ();
     }
