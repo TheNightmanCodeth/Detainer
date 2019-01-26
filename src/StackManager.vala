@@ -22,6 +22,7 @@ public class StackManager : Object {
     private Gtk.Stack stack;
     public Gtk.Window main_window;
 
+    private static string WELCOME_VIEW_ID = "welcome-view";
     private static string DETAILS_VIEW_ID = "details-view";
     private static string DETAINERS_VIEW_ID = "detainers-view";
     private static string SETTINGS_VIEW_ID = "settings-view";
@@ -47,6 +48,7 @@ public class StackManager : Object {
         main_window = window;
 
         // Add all view to the stack via add_named
+        stack.add_named(new WelcomeView (), WELCOME_VIEW_ID);
         stack.add_named(new DetailsView (), DETAILS_VIEW_ID);
         stack.add_named(new DetainersView (), DETAINERS_VIEW_ID);
         stack.add_named(new SettingsView (), SETTINGS_VIEW_ID);
