@@ -28,6 +28,7 @@ public class HeaderBar : Gtk.HeaderBar {
     HeaderBar() {
         Granite.Widgets.Utils.set_color_primary (this, Constants.BRAND_COLOR);
 
+        this.show_close_button = true;
         this.pack_end(settingsButton);
     }
 
