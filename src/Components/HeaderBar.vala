@@ -23,7 +23,7 @@ public class HeaderBar : Gtk.HeaderBar {
     static HeaderBar? instance;
 
     private StackManager stackManager = StackManager.get_instance();
-    private Gtk.Button settingsButton = new Gtk.Button.from_icon_name("preferences-system");
+    private Gtk.Button settingsButton = new Gtk.Button.from_icon_name("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
 
     HeaderBar() {
         Granite.Widgets.Utils.set_color_primary (this, Constants.BRAND_COLOR);
