@@ -22,6 +22,13 @@ public class App:Granite.Application {
 
     public static MainWindow window = null;
 
+    construct {
+        flags |= ApplicationFlags.HANDLES_OPEN;
+        application_id = Constants.APPLICATION_NAME;
+        program_name = Constants.APPLICATION_NAME;
+        var app_info = new DesktopAppInfo (Constants.DESKTOP_NAME);
+    }
+
     public static int main (string[] args) {
         var app = new Application.App ();
         return app.run (args);
@@ -34,11 +41,6 @@ public class App:Granite.Application {
     public void new_window () {
         var stack_manager = StackManager.get_instance ();
         if (window != null) {
-            if (stack_manager.get_stack ().get_visible_child_name () == "detainers-view") {
-                window.present ();
-                return;
-            }
-
             window.present ();
             return;
         }

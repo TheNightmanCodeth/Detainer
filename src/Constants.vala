@@ -17,6 +17,7 @@
  */
 namespace Application.Constants {
     public const string APPLICATION_NAME = "me.jdiggity.detainer";
+    public const string DESKTOP_NAME = "Detainers";
     public const string VERSION_NUMBER = "v0.0.1";
     public const string VERSION_NAME = "First";
     public const int APPLICATION_HEIGHT = 700;
