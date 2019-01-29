@@ -32,3 +32,4 @@ public class WelcomeView : Gtk.ScrolledWindow {
         this.add (welcome_view);
     }
 }
+}
