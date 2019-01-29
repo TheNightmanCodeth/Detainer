@@ -28,7 +28,7 @@ public class WelcomeView : Gtk.ScrolledWindow {
         welcome_view.activated.connect (() => {
             new Authenticate ("Create Detainer", "Give your detainer a name and password", Authenticate.AuthType.CREATE);
         });
-        this.add(welcome_view);
+        this.show ();
+        this.add (welcome_view);
     }
-}
 }
