@@ -23,13 +23,19 @@ public class HeaderBar : Gtk.HeaderBar {
     static HeaderBar? instance;
 
     private StackManager stackManager = StackManager.get_instance();
-    private Gtk.Button settingsButton = new Gtk.Button.from_icon_name("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
+    private Gtk.Button new_detainer_button = new Gtk.Button.from_icon_name ("list-add", Gtk.IconSize.SMALL_TOOLBAR);
+    private Gtk.Button settings_button = new Gtk.Button.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
 
     HeaderBar() {
         Granite.Widgets.Utils.set_color_primary (this, Constants.BRAND_COLOR);
 
+        new_detainer_button.clicked.connect (() => {
+            new Authenticate("Create Detainer", "Give your detainer a name and password", Authenticate.AuthType.CREATE);
+        });
+
         this.show_close_button = true;
-        this.pack_end(settingsButton);
+        this.pack_start (new_detainer_button);
+        this.pack_end (settings_button);
     }
 
     public static HeaderBar get_instance() {
