@@ -20,6 +20,7 @@ public class DetainerHandler : Object {
     private string result;
     private string error;
     private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
+    private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
     private int status;
 
     /*-
@@ -78,18 +79,13 @@ public class DetainerHandler : Object {
             int stderr;
 
             Process.spawn_async_with_pipes ("/",
-                spawn_args,
-                spawn_env,
+                spawn_args, spawn_env,
                 SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
-                null,
-                out child_pid,
-                out stdin,
-                out stdout,
-                out stderr);
-            
+                null, out child_pid, out stdin, out stdout, out stderr);
+
             FileStream input = FileStream.fdopen (stdin, "w");
             input.write (password.data);
-            
+
             ChildWatch.add (child_pid, (pid, status) => {
                 Process.close_pid (pid);
             });
@@ -98,19 +94,45 @@ public class DetainerHandler : Object {
         }
 
         /* Add this detainer to the list in ~/Detainers/detainers.txt */
-        var store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
         try {
+            if (!FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+                store.create (FileCreateFlags.NONE);
+            } 
             FileOutputStream os = store.append_to (FileCreateFlags.NONE);
             os.write ((name + ":" + path + "\n").data);
         } catch (Error e) {
             new Alert ("An error occured", error);
         }
-        
         return true;
     }
 
-    public List<string> get_detainer_info() {
-        return null;
+    /*-
+     * Gets the list of created detainers from the storefile in ~/Detainers.
+     *
+     * @returns - The list of detainers as `Detainer` objects.
+     */
+    public List<Detainer> get_detainer_info() {
+        List<Detainer> detainers = new List<Detainer> ();
+        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+            var dis = new DataInputStream (store.read ());
+            string line;
+            while ((line = dis.read_line (null)) != null) {
+                string[] data = line.split (":");
+                detainers.append (new Detainer (data[0], data[1]));
+            }
+            return detainers;
+        }
+        return detainers;
+    }
+}
+
+public class Detainer : Object {
+    public string name;
+    public string location;
+
+    public Detainer (string name, string location) {
+        this.name = name;
+        this.location = location;
     }
 }
 }
