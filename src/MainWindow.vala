@@ -20,6 +20,7 @@ using Granite.Widgets;
 namespace Application {
 public class MainWindow : Gtk.Window {
     private StackManager stack_manager = StackManager.get_instance ();
+    private DetainerHandler detainer_handler = new DetainerHandler ();
     private HeaderBar header_bar = HeaderBar.get_instance ();
     private uint configure_id;
 
@@ -36,7 +37,12 @@ public class MainWindow : Gtk.Window {
         style_context.add_class ("rounded");
 
         set_titlebar (header_bar);
-        stack_manager.load_views (this);        
+        
+        stack_manager.load_views (this);
+
+        if (!(detainer_handler.get_detainer_info ().length () < 1)) {
+            stack_manager.get_stack ().set_visible_child_name ("detainers-view");
+        }        
     }
 }
 }
