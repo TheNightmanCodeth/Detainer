@@ -7,13 +7,14 @@ add_global_arguments('-DGETTEXT_PACKAGE="@0@"'.format (meson.project_name()), la
 
 executable(
     meson.project_name(),
+    'src/Components/DetainerSourceItem.vala',
+    'src/Components/DetainerSourceList.vala',
     'src/Components/HeaderBar.vala',
     'src/Dialogs/Alert.vala',
     'src/Dialogs/Authenticate.vala',
     'src/Views/DetailsView.vala',
     'src/Views/DetainersView.vala',
     'src/Views/SettingsView.vala',
-    'src/Views/WelcomeView.vala',
     'src/Application.vala',
     'src/Constants.vala',
     'src/DetainerHandler.vala',
