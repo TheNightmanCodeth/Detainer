@@ -19,6 +19,24 @@ using Granite.Widgets;
 
 namespace Application {
 public class DetailsView : Gtk.ScrolledWindow {
+    private DetainerHandler detainer_handler;
+    private Detainer detainer;
 
+    public DetailsView (Detainer? d = new Detainer ("NULL", "NULL", false)) {
+        this.detainer = d;
+        Gtk.Image icon = new Gtk.Image.from_icon_name ("system-lock-screen", Gtk.IconSize.DIALOG);
+        Gtk.Label name = new Gtk.Label (d.name);
+        name.get_style_context ().add_class ("h3");
+        Gtk.Label location = new Gtk.Label (d.location);
+        location.get_style_context ().add_class ("h4");
+
+        Gtk.Grid info_grid = new Gtk.Grid ();
+        info_grid.attach (icon, 0, 0, 2, 2);
+        info_grid.attach (name, 2, 0, 4, 1);
+        info_grid.attach (location, 2, 1, 4, 1);
+
+        this.show ();
+        this.add (info_grid);
+    }
 }
 }
