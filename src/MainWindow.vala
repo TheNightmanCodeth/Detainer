@@ -37,12 +37,12 @@ public class MainWindow : Gtk.Window {
         style_context.add_class ("rounded");
 
         set_titlebar (header_bar);
-        
+
         stack_manager.load_views (this);
 
         if (!(detainer_handler.get_detainer_info ().length () < 1)) {
             stack_manager.get_stack ().set_visible_child_name ("detainers-view");
-        }        
+        }
     }
 }
 }

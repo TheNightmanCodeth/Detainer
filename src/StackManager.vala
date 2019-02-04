@@ -49,7 +49,7 @@ public class StackManager : Object {
 
         // Add all view to the stack via add_named
         stack.add_named(new WelcomeView (), WELCOME_VIEW_ID);
-        stack.add_named(new DetailsView (), DETAILS_VIEW_ID);
+        stack.add_named(new EmptyDetailsView (), DETAILS_VIEW_ID);
         stack.add_named(new DetainersView (), DETAINERS_VIEW_ID);
         stack.add_named(new SettingsView (), SETTINGS_VIEW_ID);
 

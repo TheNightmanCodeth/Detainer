@@ -20,6 +20,7 @@ public class DetainerHandler : Object {
     private string result;
     private string error;
     private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
+    private string detain_dir = Environment.get_home_dir () + "/Detainer/";
     private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
     private int status;
 
@@ -39,7 +40,7 @@ public class DetainerHandler : Object {
      */
     public bool create_detainer (string password, string name, owned string? path = null) {
         if (path == null || path == "") {
-            path = Environment.get_home_dir () + "/Detainer/" + name;
+            path = detain_dir + name;
         }
 
         try {
@@ -99,11 +100,15 @@ public class DetainerHandler : Object {
                 store.create (FileCreateFlags.NONE);
             } 
             FileOutputStream os = store.append_to (FileCreateFlags.NONE);
-            os.write ((name + ":" + path + "\n").data);
+            os.write ((name + ":" + path + ":" + "false" + "\n").data);
         } catch (Error e) {
             new Alert ("An error occured", error);
         }
         return true;
+    }
+
+    public bool has_detainers () {
+        return (!(get_detainer_info ().length () < 1));
     }
 
     /*-
@@ -111,28 +116,50 @@ public class DetainerHandler : Object {
      *
      * @returns - The list of detainers as `Detainer` objects.
      */
-    public List<Detainer> get_detainer_info() {
+    public List<Detainer> get_detainer_info () {
         List<Detainer> detainers = new List<Detainer> ();
         if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
             var dis = new DataInputStream (store.read ());
             string line;
             while ((line = dis.read_line (null)) != null) {
                 string[] data = line.split (":");
-                detainers.append (new Detainer (data[0], data[1]));
+                detainers.append (new Detainer (data[0], data[1], bool.parse(data[2])));
             }
             return detainers;
         }
         return detainers;
+    }
+
+    public bool mount_detainer (Detainer to_update, bool mounted) {
+        to_update.mounted = true;
+        /* Copy the file to temporary */
+        var destination = File.new_for_path (detain_dir +"/detainers.new");
+        var dis = new DataInputStream (store.read ());
+        string line;
+        FileOutputStream os = destination.append_to (FileCreateFlags.NONE);
+
+        while ((line = dis.read_line (null)) != null) {
+            if (!line.contains (to_update.name)) {
+                os.write ((line + "\n").data);
+            } else {
+                os.write ((to_update.name + ":" + to_update.location + 
+                           ":" + mounted.to_string () + "\n").data);
+            }
+        }
+        /* TODO: This is just to get ninja to compile */
+        return false;
     }
 }
 
 public class Detainer : Object {
     public string name;
     public string location;
+    public bool mounted;
 
-    public Detainer (string name, string location) {
+    public Detainer (string name, string location, bool mounted) {
         this.name = name;
         this.location = location;
+        this.mounted = mounted;
     }
 }
 }
