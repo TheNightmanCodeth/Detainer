@@ -1,0 +1,10 @@
+[default]
+name=Default
+runtime=host
+config-opts=
+run-opts=
+prefix=/home/joe/.cache/gnome-builder/install/Detainer/host
+app-id=
+postbuild=
+prebuild=
+default=true
