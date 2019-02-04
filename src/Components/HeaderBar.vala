@@ -34,7 +34,7 @@ public class HeaderBar : Gtk.HeaderBar {
         });
 
         this.show_close_button = true;
-        this.pack_start (new_detainer_button);
+        //this.pack_start (new_detainer_button);
         this.pack_end (settings_button);
     }
 
