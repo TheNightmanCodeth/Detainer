@@ -18,18 +18,22 @@
 using Granite.Widgets;
 
 namespace Application {
-public class DetainerSourceItem : Granite.Widgets.SourceList.ExpandableItem {
+public class DetainerSourceItem : Granite.Widgets.SourceList.Item {
     public Detainer detainer;
 
-    public DetainerSourceItem (Detainer d) {
-        this.detainer = d;
+    public DetainerSourceItem (Detainer detainer) {
+        update_info (detainer);
+    }
+
+    public void update_info (Detainer d) {
         name = d.name;
+        detainer = d;
+
         if (d.mounted) {
-            icon = new ThemedIcon ("process-completed");
+            icon = new ThemedIcon ("process-completed")
         } else {
-            /* TODO: Find an icon that looks like the opposite of this */
-            icon = new ThemedIcon ("process-completed");
-        }
+            icon = new ThemedIcon ("system-lock-screen");
+        }        
     }
 }
 }
