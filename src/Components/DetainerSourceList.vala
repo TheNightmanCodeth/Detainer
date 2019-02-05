@@ -20,37 +20,36 @@ using Granite.Widgets;
 namespace Application {
 public class DetainerSourceList : Gtk.ScrolledWindow {
     public signal void detainer_selected (Detainer detainer);
-    private DetainerHandler detainer_handler;
     private List<Detainer> detainers;
     private Granite.Widgets.SourceList source_list;
 
     construct {
-        width_request = 150;
+        width_request = 180;
         source_list = new Granite.Widgets.SourceList ();
-
         add (source_list);
 
-        detainer_handler = new DetainerHandler ();
-        detainers = detainer_handler.get_detainer_info ();
+        var detainer_handler = new DetainerHandler ();
 
-        var detainers_root = new CategoryItem ("Detainers");
-
-        foreach (Detainer d in detainers) {
-            DetainerSourceItem this_item = new DetainerSourceItem (d);
-            detainers_root.add (this_item);
-        }
+        detainer_handler.get_detainer_info ().foreach ((d) => {
+           add_detainer (d);
+        });
 
         source_list.item_selected.connect ((item) => {
-            stdout.printf ("yo");
             if (item == null || !(item is DetainerSourceItem)) {
                 return;
             }
+
             var detainer_item = item as DetainerSourceItem;
-            detainer_selected  (detainer_item.detainer);
+            detainer_selected (detainer_item.detainer);
         });
     }
 
     public DetainerSourceList () {
+    }
+
+    private void add_detainer (Detainer d) {
+        var detainer_item = new DetainerSourceItem (d);
+        source_list.root.add (detainer_item);
     }
 }
 }
