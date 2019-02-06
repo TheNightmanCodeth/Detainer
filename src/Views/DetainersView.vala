@@ -20,7 +20,7 @@ using Granite.Widgets;
 namespace Application {
 public class DetainersView : Gtk.ScrolledWindow {
     private DetainerSourceList d_source_list;
-    private EmptyDetailsView details_view;
+    private DetailsView details_view;
 
     enum Column {
         ICON,
@@ -31,17 +31,24 @@ public class DetainersView : Gtk.ScrolledWindow {
 
     public DetainersView () {
         d_source_list = new DetainerSourceList ();
-        details_view = new EmptyDetailsView ();
+        details_view = new DetailsView ();
+
+        var details_stack = new Gtk.Stack ();
+        details_stack.set_transition_type (Gtk.StackTransitionType.CROSSFADE);
+
+        details_stack.add_named (new EmptyDetailsView (), "no-detainer-selected");
+        details_stack.add_named (details_view, "detainer-details");
 
         var pane = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         pane.set ("wide_handle", false);
         pane.pack1 (d_source_list, false, false);
-        pane.pack2 (details_view, true, false);
+        pane.pack2 (details_stack, true, false);
 
         d_source_list.detainer_selected.connect ((d) => {
-            stdout.printf ("What");
-            DetailsView d_view = new DetailsView (d);
-            pane.pack2 (d_view, true, false);
+            if (details_stack.visible_child_name != "detainer-details") {
+                details_stack.set_visible_child_name ("detainer-details");
+            }
+            details_view.load_detainer (d);
         });
 
         this.show ();

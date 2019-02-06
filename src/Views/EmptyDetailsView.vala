@@ -19,23 +19,22 @@ using Granite.Widgets;
 
 namespace Application {
 public class EmptyDetailsView : Gtk.ScrolledWindow {
-    public signal void change_view (Detainer d);
     private DetainerHandler detainer_handler = new DetainerHandler ();
     private Detainer detainer;
     private Gtk.Stack stack;
 
     public EmptyDetailsView (Detainer? detainer = null) {
-        this.detainer = detainer;
-        this.stack = new Gtk.Stack ();
 
-        var header_label = new Granite.HeaderLabel ("Choose a detainer");
-        DetailsView details_view = new DetailsView ();
+        var welcome_view = new Welcome (_("No Detainer Selected"), _("Make a new detainer to get secure"));
+        welcome_view.append ("list-add", _("New"), _("Create a detainer to store your encrypted data"));
 
-        stack.add_named (header_label, "choose-detainer");
-        stack.add_named (new WelcomeView (), "welcome-screen");
-
+        welcome_view.activated.connect (() => {
+            new Authenticate ("Create Detainer",
+                              "Give your detainer a name and password",
+                              Authenticate.AuthType.CREATE);
+        });
         this.show ();
-        this.add (stack);
+        this.add (welcome_view);
     }
 }
 }
