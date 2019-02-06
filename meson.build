@@ -12,6 +12,7 @@ executable(
     'src/Components/FieldEntry.vala',
     'src/Components/HeaderBar.vala',
     'src/Components/PersistentPlaceholderEntry.vala',
+    'src/Components/SettingsItem.vala',
     'src/Dialogs/Alert.vala',
     'src/Dialogs/Authenticate.vala',
     'src/Views/DetailsView.vala',
