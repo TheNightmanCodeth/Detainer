@@ -19,10 +19,58 @@ namespace Application {
 public class DetainerHandler : Object {
     private string result;
     private string error;
-    private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
-    private string detain_dir = Environment.get_home_dir () + "/Detainer/";
     private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
+    private string detain_dir = Environment.get_home_dir () + "/Detainer/";
     private int status;
+
+    /*-
+     * Gets the list of created detainers from the storefile in ~/Detainers.
+     *
+     * @returns - The list of detainers as `Detainer` objects.
+     */
+    public List<Detainer> get_detainers () {
+        List<Detainer> detainers = new List<Detainer> ();
+        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+            var dis = new DataInputStream (store.read ());
+            string line;
+            while ((line = dis.read_line (null)) != null) {
+                string[] data = line.split (":");
+                detainers.append (new Detainer (data[0], data[1], bool.parse(data[2])));
+            }
+        }
+        return detainers;
+    }
+
+    public Detainer get_detainer_by_name (string name) {
+        /* TODO: Search the store for the detainer name and return a Detainer with its' data */
+    }
+
+    public bool has_detainers () {
+        return (!(get_detainer_info ().length () < 1));
+    }
+}
+
+public class Detainer : Object {
+    public string name;
+    public string comment;
+    public bool mounted;
+    public enum ExitCode {
+        SUCCESS,
+        DETAINER_EXISTS,
+        CREATION_ERROR,
+        GCFS_ERROR,
+        STORE_ERROR
+    }
+
+    private string path = Environment.get_home_dir () + "/Detainer/" + name +"/";
+    private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
+    private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
+
+    public Detainer (string name, string comment = "A secure container", bool mounted) {
+        this.name = name;
+        this.comment = comment;
+        this.mounted = mounted;
+    }
 
     /*-
      * Creates an empty detainer in the ~/.detainer/detainers directory. The crypt
@@ -38,20 +86,29 @@ public class DetainerHandler : Object {
      *
      * @returns        - true/false based on success of operation.
      */
-    public bool create_detainer (string password, string name, owned string? path = null) {
+    public ExitCode create (string password) {
         if (path == null || path == "") {
             path = detain_dir + name;
+        }
+
+        var dis = new DataInputStream (store.read ());
+        string line;
+
+        while ((line = dis.read_line (null)) != null) {
+            if (line.contains (this.name)) {
+                return ExitCode.DETAINER_EXISTS;
+            }
         }
 
         try {
             /* Make the crypt directory */
             if (!File.new_for_path (crypt_dir + name).make_directory_with_parents ()) {
                 new Alert ("An Error Occured", error);
-                return false;
+                return CREATION_ERROR;
             }
         } catch (Error e) {
             new Alert ("An Error Occured", e.message);
-            return false;
+            return CREATION_ERROR;
         }
 
         try {
@@ -59,14 +116,14 @@ public class DetainerHandler : Object {
             if (!FileUtils.test (path, FileTest.IS_DIR)) {
                 if (!File.new_for_path (path).make_directory_with_parents ()) {
                     new Alert ("An Error Occured", error);
-                    return false;
+                    return CREATION_ERROR;
                 }
-            } else if (File.new_for_path (path).enumerate_children ("standard::*",FileQueryInfoFlags.NOFOLLOW_SYMLINKS).next_file () == null) {
-
+            } else {
+                return ExitCode.CREATION_ERROR;
             }
         } catch (Error e) {
             new Alert ("An Error Occured", e.message);
-            return false;
+            return ExitCode.CREATION_ERROR;
         }
 
         /* Make the gocryptfs detainer */
@@ -92,6 +149,7 @@ public class DetainerHandler : Object {
             });
         } catch (SpawnError e) {
             new Alert ("An error occured", e.message);
+            return ExitCode.CFS_ERROR;
         }
 
         /* Add this detainer to the list in ~/Detainers/detainers.txt */
@@ -103,34 +161,12 @@ public class DetainerHandler : Object {
             os.write ((name + ":" + path + ":" + "false" + "\n").data);
         } catch (Error e) {
             new Alert ("An error occured", error);
+            return ExitCode.STORE_ERROR;
         }
-        return true;
+        return ExitCode.SUCCESS;
     }
 
-    public bool has_detainers () {
-        return (!(get_detainer_info ().length () < 1));
-    }
-
-    /*-
-     * Gets the list of created detainers from the storefile in ~/Detainers.
-     *
-     * @returns - The list of detainers as `Detainer` objects.
-     */
-    public List<Detainer> get_detainer_info () {
-        List<Detainer> detainers = new List<Detainer> ();
-        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
-            var dis = new DataInputStream (store.read ());
-            string line;
-            while ((line = dis.read_line (null)) != null) {
-                string[] data = line.split (":");
-                detainers.append (new Detainer (data[0], data[1], bool.parse(data[2])));
-            }
-            return detainers;
-        }
-        return detainers;
-    }
-
-    public bool mount_detainer (Detainer to_update, bool mounted) {
+    public ExitCode mount_detainer (Detainer to_update, bool mounted) {
         to_update.mounted = true;
         /* Copy the file to temporary */
         var destination = File.new_for_path (detain_dir +"/detainers.new");
@@ -148,18 +184,6 @@ public class DetainerHandler : Object {
         }
         /* TODO: This is just to get ninja to compile */
         return false;
-    }
-}
-
-public class Detainer : Object {
-    public string name;
-    public string location;
-    public bool mounted;
-
-    public Detainer (string name, string location, bool mounted) {
-        this.name = name;
-        this.location = location;
-        this.mounted = mounted;
     }
 }
 }
