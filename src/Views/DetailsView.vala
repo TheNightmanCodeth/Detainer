@@ -24,13 +24,12 @@ public class DetailsView : Gtk.ScrolledWindow {
     private Gtk.Image icon;
     private PersistentPlaceholderEntry detainer_name;
     private PersistentPlaceholderEntry detainer_location;
+    private Gtk.Switch auto_mount;
 
     construct {
         icon = new Gtk.Image.from_icon_name ("security-high", Gtk.IconSize.DIALOG);
         icon.valign = Gtk.Align.FILL;
         icon.pixel_size = 128;
-        icon.margin_start = 15;
-        icon.margin_end = 30;
 
         var name_grid = new Gtk.Grid ();
         name_grid.hexpand = true;
@@ -54,13 +53,30 @@ public class DetailsView : Gtk.ScrolledWindow {
         name_grid.attach (new FieldEntry (detainer_location), 0, 1, 4, 1);
         name_grid.margin_top = 20;
 
+        auto_mount = new Gtk.Switch ();
+        auto_mount.notify["active"].connect (set_auto_mount);
+
+        var mount_box = new SettingsItem (_("Mount on Boot"), auto_mount, true);
+
+        var settings_grid = new SettingsGrid (_("Settings"));
+        settings_grid.add_widget (mount_box);
+        settings_grid.margin_top = 10;
+        settings_grid.margin_start = 24;
+        settings_grid.margin_end = 24;
+
         Gtk.Grid info_grid = new Gtk.Grid ();
         info_grid.hexpand = true;
         info_grid.margin_top = 10;
+
         info_grid.attach (icon, 0, 0, 1, 2);
         info_grid.attach (name_grid, 1, 0, 4, 1);
+        info_grid.attach (settings_grid, 0, 2, 5, 1);
 
         this.add (info_grid);
+    }
+
+    private void set_auto_mount () {
+        /* TODO: Mount detainer on startup */
     }
 
     public async void load_detainer (Detainer d) {
