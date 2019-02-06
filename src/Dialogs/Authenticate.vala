@@ -23,6 +23,7 @@ public class Authenticate : Object {
     }
 
     private DetainerHandler detainer_handler = new DetainerHandler ();
+    private StackManager stack_manager = StackManager.get_instance ();
 
     public Authenticate (string title, string description, AuthType type) {
         Gtk.Entry pass_entry = new Gtk.Entry ();
@@ -79,6 +80,7 @@ public class Authenticate : Object {
         box.pack_start (pass_entry, false, false, 0);
         if (type == AuthType.CREATE) box.pack_start (confirmation_entry, false, false, 0);
         box.show ();
+        message_dialog.transient_for = stack_manager.main_window;
         message_dialog.custom_bin.add (box);
 
         message_dialog.run ();
