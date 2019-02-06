@@ -30,10 +30,10 @@ public class DetainerSourceItem : Granite.Widgets.SourceList.Item {
         detainer = d;
 
         if (d.mounted) {
-            icon = new ThemedIcon ("process-completed")
+            icon = new ThemedIcon ("dialog-password-symbolic");
         } else {
-            icon = new ThemedIcon ("system-lock-screen");
-        }        
+            icon = new ThemedIcon ("dialog-password-symbolic");
+        }
     }
 }
 }
