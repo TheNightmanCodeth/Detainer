@@ -22,6 +22,7 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
     public signal void detainer_selected (Detainer detainer);
     private List<Detainer> detainers;
     private Granite.Widgets.SourceList source_list;
+    private Granite.Widgets.SourceList.ExpandableItem title_item;
 
     construct {
         width_request = 180;
@@ -29,6 +30,11 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
         add (source_list);
 
         var detainer_handler = new DetainerHandler ();
+
+        title_item = new Granite.Widgets.SourceList.ExpandableItem ("Detainers");
+        source_list.root.add (title_item);
+        title_item.collapsible = false;
+        title_item.expand_all ();
 
         detainer_handler.get_detainer_info ().foreach ((d) => {
            add_detainer (d);
@@ -49,7 +55,7 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
 
     private void add_detainer (Detainer d) {
         var detainer_item = new DetainerSourceItem (d);
-        source_list.root.add (detainer_item);
+        title_item.add (detainer_item);
     }
 }
 }
