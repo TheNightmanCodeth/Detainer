@@ -23,7 +23,7 @@ public class DetailsView : Gtk.ScrolledWindow {
     private Detainer detainer;
     private Gtk.Image icon;
     private PersistentPlaceholderEntry detainer_name;
-    private PersistentPlaceholderEntry detainer_location;
+    private PersistentPlaceholderEntry detainer_comment;
     private Gtk.Switch auto_mount;
 
     construct {
@@ -42,15 +42,15 @@ public class DetailsView : Gtk.ScrolledWindow {
         detainer_name.margin_end = 60;
         detainer_name.margin_bottom = 5;
 
-        detainer_location = new PersistentPlaceholderEntry ();
-        detainer_location.hexpand = true;
-        detainer_location.placeholder_text = _("Location");
-        detainer_location.get_style_context ().add_class ("h3");
-        detainer_location.valign = Gtk.Align.START;
-        detainer_location.margin_end = 60;
+        detainer_comment = new PersistentPlaceholderEntry ();
+        detainer_comment.hexpand = true;
+        detainer_comment.placeholder_text = _("Location");
+        detainer_comment.get_style_context ().add_class ("h3");
+        detainer_comment.valign = Gtk.Align.START;
+        detainer_comment.margin_end = 60;
 
         name_grid.attach (new FieldEntry (detainer_name), 0, 0, 4, 1);
-        name_grid.attach (new FieldEntry (detainer_location), 0, 1, 4, 1);
+        name_grid.attach (new FieldEntry (detainer_comment), 0, 1, 4, 1);
         name_grid.margin_top = 20;
 
         auto_mount = new Gtk.Switch ();
@@ -64,6 +64,18 @@ public class DetailsView : Gtk.ScrolledWindow {
         settings_grid.margin_start = 24;
         settings_grid.margin_end = 24;
 
+        var mount_button = new Gtk.Button.with_label (_("Mount"));
+        mount_button.clicked.connect (() => {
+            /* TODO: Mount this.detainer */
+        });
+
+        var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
+        button_grid.hexpand = true;
+        button_grid.margin_start = 24;
+        button_grid.margin_end = 24;
+        button_grid.margin_bottom = 14;
+        button_grid.pack_end (mount_button, false, false, 0);
+
         Gtk.Grid info_grid = new Gtk.Grid ();
         info_grid.hexpand = true;
         info_grid.margin_top = 10;
@@ -72,7 +84,11 @@ public class DetailsView : Gtk.ScrolledWindow {
         info_grid.attach (name_grid, 1, 0, 4, 1);
         info_grid.attach (settings_grid, 0, 2, 5, 1);
 
-        this.add (info_grid);
+        var main_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+        main_box.pack_start (info_grid, false, false, 0);
+        main_box.pack_end (button_grid, false, false, 0);
+
+        this.add (main_box);
     }
 
     private void set_auto_mount () {
@@ -82,7 +98,7 @@ public class DetailsView : Gtk.ScrolledWindow {
     public async void load_detainer (Detainer d) {
         this.detainer = d;
         detainer_name.set_text (d.name);
-        detainer_location.set_text (d.location);
+        detainer_comment.set_text (d.comment);
 
         if (d.mounted) {
             icon.icon_name = "security-high";

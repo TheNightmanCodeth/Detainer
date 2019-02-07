@@ -35,18 +35,28 @@ public class DetainerHandler : Object {
             string line;
             while ((line = dis.read_line (null)) != null) {
                 string[] data = line.split (":");
-                detainers.append (new Detainer (data[0], data[1], bool.parse(data[2])));
+                detainers.append (new Detainer (data[0], bool.parse (data[2]), data[1]));
             }
         }
         return detainers;
     }
 
     public Detainer get_detainer_by_name (string name) {
-        /* TODO: Search the store for the detainer name and return a Detainer with its' data */
+        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+            var dis = new DataInputStream (store.read ());
+            string line;
+            while ((line = dis.read_line (null)) != null) {
+                if (line.contains ("name")) {
+                    string [] data = line.split (":");
+                    return new Detainer (data[0], bool.parse (data[2]), data[1]);
+                }
+            }
+        }
+        return null;
     }
 
     public bool has_detainers () {
-        return (!(get_detainer_info ().length () < 1));
+        return (!(get_detainers ().length () < 1));
     }
 }
 
@@ -62,14 +72,16 @@ public class Detainer : Object {
         STORE_ERROR
     }
 
-    private string path = Environment.get_home_dir () + "/Detainer/" + name +"/";
+    private string path;
+    private string detain_dir = Environment.get_home_dir () + "/Detainer/";
     private string crypt_dir = Environment.get_home_dir () + "/Detainer/crypt/";
     private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
 
-    public Detainer (string name, string comment = "A secure container", bool mounted) {
+    public Detainer (string name, bool mounted, string comment = "A secure container") {
         this.name = name;
         this.comment = comment;
         this.mounted = mounted;
+        this.path = Environment.get_home_dir () + "/Detainer/" + name +"/";
     }
 
     /*-
@@ -87,10 +99,6 @@ public class Detainer : Object {
      * @returns        - true/false based on success of operation.
      */
     public ExitCode create (string password) {
-        if (path == null || path == "") {
-            path = detain_dir + name;
-        }
-
         var dis = new DataInputStream (store.read ());
         string line;
 
@@ -103,7 +111,7 @@ public class Detainer : Object {
         try {
             /* Make the crypt directory */
             if (!File.new_for_path (crypt_dir + name).make_directory_with_parents ()) {
-                new Alert ("An Error Occured", error);
+                new Alert ("An Error Occured", "Couldn't create file");
                 return CREATION_ERROR;
             }
         } catch (Error e) {
@@ -115,7 +123,7 @@ public class Detainer : Object {
             /* Make the detainer directory if it doesn't exist */
             if (!FileUtils.test (path, FileTest.IS_DIR)) {
                 if (!File.new_for_path (path).make_directory_with_parents ()) {
-                    new Alert ("An Error Occured", error);
+                    new Alert ("An Error Occured", "Couldn't create detainer directory");
                     return CREATION_ERROR;
                 }
             } else {
@@ -149,7 +157,7 @@ public class Detainer : Object {
             });
         } catch (SpawnError e) {
             new Alert ("An error occured", e.message);
-            return ExitCode.CFS_ERROR;
+            return ExitCode.GCFS_ERROR;
         }
 
         /* Add this detainer to the list in ~/Detainers/detainers.txt */
@@ -160,14 +168,15 @@ public class Detainer : Object {
             FileOutputStream os = store.append_to (FileCreateFlags.NONE);
             os.write ((name + ":" + path + ":" + "false" + "\n").data);
         } catch (Error e) {
-            new Alert ("An error occured", error);
+            new Alert ("An error occured", "Couldn't write to store file");
             return ExitCode.STORE_ERROR;
         }
         return ExitCode.SUCCESS;
     }
 
-    public ExitCode mount_detainer (Detainer to_update, bool mounted) {
-        to_update.mounted = true;
+    public ExitCode mount (string password) {
+        this.mounted = true;
+
         /* Copy the file to temporary */
         var destination = File.new_for_path (detain_dir +"/detainers.new");
         var dis = new DataInputStream (store.read ());
@@ -175,15 +184,42 @@ public class Detainer : Object {
         FileOutputStream os = destination.append_to (FileCreateFlags.NONE);
 
         while ((line = dis.read_line (null)) != null) {
-            if (!line.contains (to_update.name)) {
+            if (!line.contains (name)) {
                 os.write ((line + "\n").data);
             } else {
-                os.write ((to_update.name + ":" + to_update.location + 
+                os.write ((name + ":" + comment + 
                            ":" + mounted.to_string () + "\n").data);
             }
         }
-        /* TODO: This is just to get ninja to compile */
-        return false;
+
+        /* Mount the detainer */
+        try {
+            string[] spawn_args = {"gocryptfs", "-q", "--", crypt_dir + name, path};
+            string[] spawn_env = Environ.get ();
+            Pid child_pid;
+
+            int stdin;
+            int stdout;
+            int stderr;
+
+            Process.spawn_async_with_pipes ("/",
+                spawn_args, spawn_env,
+                SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
+                null, out child_pid, out stdin, out stdout, out stderr);
+
+            FileStream input = FileStream.fdopen (stdin, "w");
+            input.write (password.data);
+
+            ChildWatch.add (child_pid, (pid, status) => {
+                Process.close_pid (pid);
+            });
+
+            return ExitCode.SUCCESS;
+        } catch (SpawnError e) {
+            new Alert ("An error occured", e.message);
+            return ExitCode.GCFS_ERROR;
+        }
+
     }
 }
 }

@@ -40,7 +40,7 @@ public class MainWindow : Gtk.Window {
 
         stack_manager.load_views (this);
 
-        if (!(detainer_handler.get_detainer_info ().length () < 1)) {
+        if (!(detainer_handler.get_detainers ().length () < 1)) {
             stack_manager.get_stack ().set_visible_child_name ("detainers-view");
         }
     }

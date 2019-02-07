@@ -66,7 +66,8 @@ public class Authenticate : Object {
             var confirm = confirmation_entry.get_text ();
             var password = pass_entry.get_text ();
             if (confirm == password) {
-                detainer_handler.create_detainer (password, title_entry.get_text ());
+                var detainer = new Detainer (title_entry.get_text (), false);
+                detainer.create (password);
                 message_dialog.destroy ();
             }
         });

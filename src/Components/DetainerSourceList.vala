@@ -36,7 +36,7 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
         title_item.collapsible = false;
         title_item.expand_all ();
 
-        detainer_handler.get_detainer_info ().foreach ((d) => {
+        detainer_handler.get_detainers ().foreach ((d) => {
            add_detainer (d);
         });
 
