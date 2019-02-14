@@ -19,7 +19,10 @@ using Granite.Widgets;
 
 namespace Application {
 public class DetainerSourceList : Gtk.ScrolledWindow {
+    static DetainerSourceList? instance;
+
     public signal void detainer_selected (Detainer detainer);
+
     private List<Detainer> detainers;
     private Granite.Widgets.SourceList source_list;
     private Granite.Widgets.SourceList.ExpandableItem title_item;
@@ -51,6 +54,17 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
     }
 
     public DetainerSourceList () {
+    }
+
+    public static DetainerSourceList get_instance () {
+        if (instance == null) {
+            instance = new DetainerSourceList ();
+        }
+        return instance;
+    }
+
+    public Granite.Widgets.SourceList get_source_list () {
+        return source_list;
     }
 
     private void add_detainer (Detainer d) {

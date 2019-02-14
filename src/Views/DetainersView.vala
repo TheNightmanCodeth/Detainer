@@ -19,6 +19,7 @@ using Granite.Widgets;
 
 namespace Application {
 public class DetainersView : Gtk.ScrolledWindow {
+
     private DetainerSourceList d_source_list;
     private DetailsView details_view;
 
@@ -30,7 +31,7 @@ public class DetainersView : Gtk.ScrolledWindow {
     }
 
     public DetainersView () {
-        d_source_list = new DetainerSourceList ();
+        d_source_list = DetainerSourceList.get_instance ();
         details_view = new DetailsView ();
 
         var details_stack = new Gtk.Stack ();

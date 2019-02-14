@@ -84,6 +84,10 @@ public class Detainer : Object {
         this.path = Environment.get_home_dir () + "/Detainer/" + name +"/";
     }
 
+    public void unmount () {
+        /* TODO: Not implemented */
+    }
+
     /*-
      * Creates an empty detainer in the ~/.detainer/detainers directory. The crypt
      * folder is stored in ~/.detainer/detainers/crypt/ and stores the encrypted data.

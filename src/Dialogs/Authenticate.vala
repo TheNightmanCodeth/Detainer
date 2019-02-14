@@ -23,14 +23,16 @@ public class Authenticate : Object {
     }
 
     private DetainerHandler detainer_handler = new DetainerHandler ();
+    private Detainer detainer;
     private StackManager stack_manager = StackManager.get_instance ();
 
-    public Authenticate (string title, string description, AuthType type) {
+    public Authenticate (string title, string description, AuthType type, Detainer? detainer = null) {
+        this.detainer = detainer;
+
         Gtk.Entry pass_entry = new Gtk.Entry ();
         Gtk.Entry confirmation_entry = new Gtk.Entry ();
         Gtk.Entry title_entry = new Gtk.Entry ();
         Granite.MessageDialog message_dialog;
-        string confirm_button = "Authenticate";
 
         message_dialog = new Granite.MessageDialog.with_image_from_icon_name (
             title,
@@ -44,6 +46,11 @@ public class Authenticate : Object {
         pass_entry.placeholder_text = "Password";
         pass_entry.show ();
 
+        var cancel = (Gtk.Button) message_dialog.add_button ("Cancel", 6666);
+        var create = (Gtk.Button) message_dialog.add_button ("Confirm", 9090);
+
+        create.get_style_context ().add_class ("suggested-action");
+
         if (type == AuthType.CREATE) {
             title_entry.visibility = true;
             title_entry.set_icon_from_icon_name (Gtk.EntryIconPosition.PRIMARY, "emblem-default-symbolic");
@@ -55,22 +62,22 @@ public class Authenticate : Object {
             confirmation_entry.placeholder_text = "Confirm password";
             confirmation_entry.show ();
 
-            confirm_button = "Create Detainer";
+            create.label = "Create";
+            create.clicked.connect (() => {
+                var confirm = confirmation_entry.get_text ();
+                var password = pass_entry.get_text ();
+                if (confirm == password) {
+                    var new_detainer = new Detainer (title_entry.get_text (), false);
+                    new_detainer.create (password);
+                    message_dialog.destroy ();
+                }
+            });
+        } else if (type == AuthType.MOUNT) {
+            create.label = "Authenticate";
+            create.clicked.connect (() => {
+                detainer.mount (pass_entry.get_text ());
+            });
         }
-
-        var cancel = (Gtk.Button) message_dialog.add_button ("Cancel", 6666);
-        var create = (Gtk.Button) message_dialog.add_button (confirm_button, 9090);
-
-        create.get_style_context ().add_class ("suggested-action");
-        create.clicked.connect (() => {
-            var confirm = confirmation_entry.get_text ();
-            var password = pass_entry.get_text ();
-            if (confirm == password) {
-                var detainer = new Detainer (title_entry.get_text (), false);
-                detainer.create (password);
-                message_dialog.destroy ();
-            }
-        });
 
         cancel.clicked.connect (() => {
             message_dialog.destroy ();

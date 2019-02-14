@@ -64,17 +64,11 @@ public class DetailsView : Gtk.ScrolledWindow {
         settings_grid.margin_start = 24;
         settings_grid.margin_end = 24;
 
-        var mount_button = new Gtk.Button.with_label (_("Mount"));
-        mount_button.clicked.connect (() => {
-            /* TODO: Mount this.detainer */
-        });
-
         var button_grid = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
         button_grid.hexpand = true;
         button_grid.margin_start = 24;
         button_grid.margin_end = 24;
         button_grid.margin_bottom = 14;
-        button_grid.pack_end (mount_button, false, false, 0);
 
         Gtk.Grid info_grid = new Gtk.Grid ();
         info_grid.hexpand = true;

@@ -20,29 +20,51 @@ using Granite.Widgets;
 namespace Application {
 public class HeaderBar : Gtk.HeaderBar {
 
-    static HeaderBar? instance;
-
-    private StackManager stackManager = StackManager.get_instance();
+    private StackManager stackManager = StackManager.get_instance ();
     private Gtk.Button new_detainer_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
     private Gtk.Button settings_button = new Gtk.Button.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
+    private Gtk.ToggleToolButton mount_button = new Gtk.ToggleToolButton ();
+    private Detainer this_detainer;
 
-    HeaderBar() {
+    public HeaderBar() {
         Granite.Widgets.Utils.set_color_primary (this, Constants.BRAND_COLOR);
+
 
         new_detainer_button.clicked.connect (() => {
             new Authenticate("Create Detainer", "Give your detainer a name and password", Authenticate.AuthType.CREATE);
         });
 
+        mount_button.visible = false;
+        var unlock_icon = new Gtk.Image.from_icon_name ("changes_allow", Gtk.IconSize.LARGE_TOOLBAR);
+        var lock_icon = new Gtk.Image.from_icon_name ("locked", Gtk.IconSize.LARGE_TOOLBAR);
+        mount_button.toggled.connect (() => {
+            if (this.mount_button.active) {
+                mount_button.tooltip_text = _("Lock " + this_detainer.name);
+                mount_button.set_icon_widget (lock_icon);
+            } else {
+                mount_button.tooltip_text = _("Unlock " + this_detainer.name);
+                mount_button.set_icon_widget (unlock_icon);
+            }
+            mount_button.show_all ();
+        });
+        DetainerSourceList.get_instance ().detainer_selected.connect ((d) => {
+            this_detainer = d;
+            if (d.mounted) {
+                mount_button.set_icon_widget (unlock_icon);
+            } else {
+                mount_button.set_icon_widget (lock_icon);
+            }
+            mount_button.visible = true;
+            mount_button.show_all ();
+        });
+        mount_button.show_all ();
+
+        
+
         this.show_close_button = true;
+        this.pack_start (mount_button);
         this.pack_start (new_detainer_button);
         this.pack_end (settings_button);
-    }
-
-    public static HeaderBar get_instance() {
-        if (instance == null) {
-            instance = new HeaderBar();
-        }
-        return instance;
     }
 }
 }
