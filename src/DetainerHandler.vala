@@ -37,6 +37,10 @@ public class DetainerHandler : Object {
                 string[] data = line.split (":");
                 detainers.append (new Detainer (data[0], bool.parse (data[2]), data[1]));
             }
+        } else {
+            File.new_for_path (detain_dir).make_directory ();
+            FileOutputStream os = store.create (FileCreateFlags.NONE);
+            os.write ("".data);
         }
         return detainers;
     }
