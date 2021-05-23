@@ -73,7 +73,8 @@ public class Detainer : Object {
         DETAINER_EXISTS,
         CREATION_ERROR,
         GCFS_ERROR,
-        STORE_ERROR
+        STORE_ERROR,
+        FUSE_ERROR
     }
 
     private string path;
@@ -88,8 +89,31 @@ public class Detainer : Object {
         this.path = Environment.get_home_dir () + "/Detainer/" + name +"/";
     }
 
-    public void unmount () {
-        /* TODO: Not implemented */
+    public ExitCode unmount () {
+        try {
+            string[] spawn_args = {"fusermount", "-u", path};
+            string[] spawn_env = Environ.get ();
+
+            Pid child_pid;
+
+            int stdin;
+            int stdout;
+            int stderr;
+
+            Process.spawn_async_with_pipes ("/",
+                    spawn_args, spawn_env,
+                    SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD,
+                    null, out child_pid, out stdin, out stdout, out stderr);
+
+            ChildWatch.add (child_pid, (pid, status) => {
+                Process.close_pid (pid);
+            });
+        } catch (SpawnError e) {
+            new Alert ("An error occured", e.message);
+            return ExitCode.FUSE_ERROR;
+        }
+        this.mounted = false;
+        return ExitCode.SUCCESS;
     }
 
     /*-
@@ -185,7 +209,7 @@ public class Detainer : Object {
     public ExitCode mount (string password) {
         this.mounted = true;
 
-        /* Copy the file to temporary */
+        /* update mount status in detainers file */
         var destination = File.new_for_path (detain_dir +"/detainers.new");
         var dis = new DataInputStream (store.read ());
         string line;
@@ -227,7 +251,6 @@ public class Detainer : Object {
             new Alert ("An error occured", e.message);
             return ExitCode.GCFS_ERROR;
         }
-
     }
 }
 }
