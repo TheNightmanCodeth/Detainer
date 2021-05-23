@@ -17,6 +17,8 @@ Detainers is a parallel to plasma vault designed with elementaryOS in mind.
  - `gtk+-3.0`
  - `granite`
  - `meson`
+ - `fuse`
+ - `gocryptfs`
 
 ### Building
 ```
