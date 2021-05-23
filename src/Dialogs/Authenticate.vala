@@ -76,6 +76,7 @@ public class Authenticate : Object {
             create.label = "Authenticate";
             create.clicked.connect (() => {
                 detainer.mount (pass_entry.get_text ());
+                message_dialog.destroy ();
             });
         }
 
