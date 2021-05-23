@@ -34,35 +34,7 @@ public class HeaderBar : Gtk.HeaderBar {
             new Authenticate("Create Detainer", "Give your detainer a name and password", Authenticate.AuthType.CREATE);
         });
 
-        mount_button.visible = false;
-        var unlock_icon = new Gtk.Image.from_icon_name ("changes_allow", Gtk.IconSize.LARGE_TOOLBAR);
-        var lock_icon = new Gtk.Image.from_icon_name ("locked", Gtk.IconSize.LARGE_TOOLBAR);
-        mount_button.toggled.connect (() => {
-            if (this.mount_button.active) {
-                mount_button.tooltip_text = _("Lock " + this_detainer.name);
-                mount_button.set_icon_widget (lock_icon);
-            } else {
-                mount_button.tooltip_text = _("Unlock " + this_detainer.name);
-                mount_button.set_icon_widget (unlock_icon);
-            }
-            mount_button.show_all ();
-        });
-        DetainerSourceList.get_instance ().detainer_selected.connect ((d) => {
-            this_detainer = d;
-            if (d.mounted) {
-                mount_button.set_icon_widget (unlock_icon);
-            } else {
-                mount_button.set_icon_widget (lock_icon);
-            }
-            mount_button.visible = true;
-            mount_button.show_all ();
-        });
-        mount_button.show_all ();
-
-        
-
         this.show_close_button = true;
-        this.pack_start (mount_button);
         this.pack_start (new_detainer_button);
         this.pack_end (settings_button);
     }
