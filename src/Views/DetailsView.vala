@@ -22,8 +22,8 @@ public class DetailsView : Gtk.ScrolledWindow {
     private DetainerHandler detainer_handler;
     private Detainer detainer;
     private Gtk.Image icon;
-    private PersistentPlaceholderEntry detainer_name;
-    private PersistentPlaceholderEntry detainer_comment;
+    private Gtk.Label detainer_name;
+    private Gtk.Label detainer_comment;
     private Gtk.Switch auto_mount;
 
     construct {
@@ -34,23 +34,24 @@ public class DetailsView : Gtk.ScrolledWindow {
         var name_grid = new Gtk.Grid ();
         name_grid.hexpand = true;
 
-        detainer_name = new PersistentPlaceholderEntry ();
-        detainer_name.hexpand = true;
-        detainer_name.placeholder_text = _("Detainer name");
-        detainer_name.get_style_context ().add_class ("h2");
+        detainer_name = new Gtk.Label (null);
+        detainer_name.label = "TITLE";
+        detainer_name.hexpand = false;
+        detainer_name.get_style_context ().add_class (Granite.STYLE_CLASS_H1_LABEL);
         detainer_name.valign = Gtk.Align.START;
         detainer_name.margin_end = 60;
         detainer_name.margin_bottom = 5;
 
-        detainer_comment = new PersistentPlaceholderEntry ();
-        detainer_comment.hexpand = true;
-        detainer_comment.placeholder_text = _("Location");
-        detainer_comment.get_style_context ().add_class ("h3");
+        detainer_comment = new Gtk.Label (null);
+        detainer_comment.hexpand = false;
+        detainer_comment.label = "Location";
+        detainer_comment.get_style_context ().add_class (Granite.STYLE_CLASS_H3_LABEL);
         detainer_comment.valign = Gtk.Align.START;
         detainer_comment.margin_end = 60;
+        detainer_comment.margin_start = 12;
 
-        name_grid.attach (new FieldEntry (detainer_name), 0, 0, 4, 1);
-        name_grid.attach (new FieldEntry (detainer_comment), 0, 1, 4, 1);
+        name_grid.attach (detainer_name, 0, 0, 1, 1);
+        name_grid.attach (detainer_comment, 0, 1, 5, 1);
         name_grid.margin_top = 20;
 
         auto_mount = new Gtk.Switch ();
@@ -105,8 +106,8 @@ public class DetailsView : Gtk.ScrolledWindow {
 
     public async void load_detainer (Detainer d) {
         this.detainer = d;
-        detainer_name.set_text (d.name);
-        detainer_comment.set_text (d.comment);
+        detainer_name.label = d.name;
+        detainer_comment.label = d.comment;
 
         if (d.mounted) {
             icon.icon_name = "security-high";
