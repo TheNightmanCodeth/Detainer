@@ -67,7 +67,7 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
         return source_list;
     }
 
-    private void add_detainer (Detainer d) {
+    public void add_detainer (Detainer d) {
         var detainer_item = new DetainerSourceItem (d);
         title_item.add (detainer_item);
     }

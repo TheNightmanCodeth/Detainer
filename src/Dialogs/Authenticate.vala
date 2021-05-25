@@ -69,6 +69,8 @@ public class Authenticate : Object {
                 if (confirm == password) {
                     var new_detainer = new Detainer (title_entry.get_text (), false);
                     new_detainer.create (password);
+                    var list = DetainerSourceList.get_instance ();
+                    list.add_detainer (new_detainer);
                     message_dialog.destroy ();
                 }
             });
