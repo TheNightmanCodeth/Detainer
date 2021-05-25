@@ -9,7 +9,6 @@ executable(
     meson.project_name(),
     'src/Components/DetainerSourceItem.vala',
     'src/Components/DetainerSourceList.vala',
-    'src/Components/FieldEntry.vala',
     'src/Components/HeaderBar.vala',
     'src/Components/SettingsItem.vala',
     'src/Dialogs/Alert.vala',

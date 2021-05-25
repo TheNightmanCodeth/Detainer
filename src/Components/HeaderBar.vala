@@ -20,11 +20,8 @@ using Granite.Widgets;
 namespace Application {
 public class HeaderBar : Gtk.HeaderBar {
 
-    private StackManager stackManager = StackManager.get_instance ();
     private Gtk.Button new_detainer_button = new Gtk.Button.from_icon_name ("document-new", Gtk.IconSize.LARGE_TOOLBAR);
     private Gtk.Button settings_button = new Gtk.Button.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
-    private Gtk.ToggleToolButton mount_button = new Gtk.ToggleToolButton ();
-    private Detainer this_detainer;
 
     public HeaderBar() {
         Granite.Widgets.Utils.set_color_primary (this, Constants.BRAND_COLOR);

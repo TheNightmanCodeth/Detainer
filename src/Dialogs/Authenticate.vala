@@ -22,7 +22,6 @@ public class Authenticate : Object {
         MOUNT
     }
 
-    private DetainerHandler detainer_handler = new DetainerHandler ();
     private Detainer detainer;
     private StackManager stack_manager = StackManager.get_instance ();
 
@@ -68,7 +67,11 @@ public class Authenticate : Object {
                 var password = pass_entry.get_text ();
                 if (confirm == password) {
                     var new_detainer = new Detainer (title_entry.get_text (), false);
-                    new_detainer.create (password);
+                    try {
+                        new_detainer.create (password);
+                    } catch (Error e) {
+                        new Alert ("Error", e.message);
+                    }
                     var list = DetainerSourceList.get_instance ();
                     list.add_detainer (new_detainer);
                     message_dialog.destroy ();
@@ -77,7 +80,8 @@ public class Authenticate : Object {
         } else if (type == AuthType.MOUNT) {
             create.label = "Authenticate";
             create.clicked.connect (() => {
-                detainer.mount (pass_entry.get_text ());
+                try { detainer.mount (pass_entry.get_text ()); }
+                catch (Error e) { new Alert ("Error", e.message); }
                 message_dialog.destroy ();
             });
         }

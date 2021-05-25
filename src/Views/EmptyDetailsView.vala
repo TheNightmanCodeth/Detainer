@@ -19,9 +19,6 @@ using Granite.Widgets;
 
 namespace Application {
 public class EmptyDetailsView : Gtk.ScrolledWindow {
-    private DetainerHandler detainer_handler = new DetainerHandler ();
-    private Detainer detainer;
-    private Gtk.Stack stack;
 
     public EmptyDetailsView (Detainer? detainer = null) {
 

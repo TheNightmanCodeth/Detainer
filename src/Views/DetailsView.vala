@@ -19,7 +19,6 @@ using Granite.Widgets;
 
 namespace Application {
 public class DetailsView : Gtk.ScrolledWindow {
-    private DetainerHandler detainer_handler;
     private Detainer detainer;
     private Gtk.Image icon;
     private Gtk.Label detainer_name;

@@ -23,7 +23,6 @@ public class DetainerSourceList : Gtk.ScrolledWindow {
 
     public signal void detainer_selected (Detainer detainer);
 
-    private List<Detainer> detainers;
     private Granite.Widgets.SourceList source_list;
     private Granite.Widgets.SourceList.ExpandableItem title_item;
 

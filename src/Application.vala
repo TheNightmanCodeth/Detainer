@@ -39,7 +39,6 @@ public class App:Granite.Application {
     }
 
     public void new_window () {
-        var stack_manager = StackManager.get_instance ();
         if (window != null) {
             window.present ();
             return;

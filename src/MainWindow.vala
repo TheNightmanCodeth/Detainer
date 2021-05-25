@@ -22,7 +22,6 @@ public class MainWindow : Gtk.Window {
     private StackManager stack_manager = StackManager.get_instance ();
     private DetainerHandler detainer_handler = new DetainerHandler ();
     private HeaderBar header_bar = new HeaderBar ();
-    private uint configure_id;
 
     public MainWindow (Gtk.Application application) {
         Object (application: application,

@@ -17,11 +17,8 @@
  */
 namespace Application {
 public class DetainerHandler : Object {
-    private string result;
-    private string error;
     private File store = File.new_for_path (Environment.get_home_dir () + "/Detainer/detainers.txt");
     private string detain_dir = Environment.get_home_dir () + "/Detainer/";
-    private int status;
 
     /*-
      * Gets the list of created detainers from the storefile in ~/Detainers.
@@ -30,31 +27,39 @@ public class DetainerHandler : Object {
      */
     public List<Detainer> get_detainers () {
         List<Detainer> detainers = new List<Detainer> ();
-        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
-            var dis = new DataInputStream (store.read ());
-            string line;
-            while ((line = dis.read_line (null)) != null) {
-                string[] data = line.split (":");
-                detainers.append (new Detainer (data[0], bool.parse (data[2]), data[1]));
+        try {
+            if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+                var dis = new DataInputStream (store.read ());
+                string line;
+                while ((line = dis.read_line (null)) != null) {
+                    string[] data = line.split (":");
+                    detainers.append (new Detainer (data[0], bool.parse (data[2]), data[1]));
+                }
+            } else {
+                File.new_for_path (detain_dir).make_directory ();
+                FileOutputStream os = store.create (FileCreateFlags.NONE);
+                os.write ("".data);
             }
-        } else {
-            File.new_for_path (detain_dir).make_directory ();
-            FileOutputStream os = store.create (FileCreateFlags.NONE);
-            os.write ("".data);
+        } catch (Error e) {
+            print("Error caught: " + e.message + "");
         }
         return detainers;
     }
 
-    public Detainer get_detainer_by_name (string name) {
-        if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
-            var dis = new DataInputStream (store.read ());
-            string line;
-            while ((line = dis.read_line (null)) != null) {
-                if (line.contains ("name")) {
-                    string [] data = line.split (":");
-                    return new Detainer (data[0], bool.parse (data[2]), data[1]);
+    public Detainer? get_detainer_by_name (string name) {
+        try {
+            if (FileUtils.test (store.get_path (), FileTest.EXISTS)) {
+                var dis = new DataInputStream (store.read ());
+                string line;
+                while ((line = dis.read_line (null)) != null) {
+                    if (line.contains ("name")) {
+                        string [] data = line.split (":");
+                        return new Detainer (data[0], bool.parse (data[2]), data[1]);
+                    }
                 }
             }
+        } catch (Error e) {
+            print("Error: " +e.message);
         }
         return null;
     }
@@ -130,7 +135,7 @@ public class Detainer : Object {
      *
      * @returns        - true/false based on success of operation.
      */
-    public ExitCode create (string password) {
+    public ExitCode create (string password) throws Error {
         var dis = new DataInputStream (store.read ());
         string line;
 
@@ -206,7 +211,7 @@ public class Detainer : Object {
         return ExitCode.SUCCESS;
     }
 
-    public ExitCode mount (string password) {
+    public ExitCode mount (string password) throws Error {
         this.mounted = true;
 
         /* update mount status in detainers file */

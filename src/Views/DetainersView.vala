@@ -49,7 +49,7 @@ public class DetainersView : Gtk.ScrolledWindow {
             if (details_stack.visible_child_name != "detainer-details") {
                 details_stack.set_visible_child_name ("detainer-details");
             }
-            details_view.load_detainer (d);
+            details_view.load_detainer.begin (d);
         });
 
         this.show ();
